@@ -96,3 +96,7 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type) {
         }
     }
 }
+
+void Shader::setFloat4(const std::string &name, float x, float y, float z, float w) const {
+    glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
+}
