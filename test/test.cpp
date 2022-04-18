@@ -59,7 +59,7 @@ TEST(shader, uniform) {
     };
     VAOManager vaoManager1(vertices1, sizeof(vertices1), indices1, sizeof(indices1));
     VAOManager vaoManager2(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
-    Shader shader(R"(D:\Projects\C++\learn_opengl\shader\hello.vert)", R"(D:\Projects\C++\learn_opengl\shader\hello.frag)");
+    Shader shader(R"(D:\Projects\C++\learn_opengl\resources\shader\hello.vert)", R"(D:\Projects\C++\learn_opengl\resources\shader\hello.frag)");
 
 //    图元装配设置
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

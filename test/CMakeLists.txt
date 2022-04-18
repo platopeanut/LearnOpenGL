@@ -4,7 +4,7 @@ enable_testing()
 file(GLOB TEST_DIR ./*)
 add_executable(${PROJECT_NAME} ${TEST_DIR})
 target_link_libraries(${PROJECT_NAME}
-        LIB
+        MY_LIB
         libglfw3.a
         libgtest.a
         libgtest_main.a
