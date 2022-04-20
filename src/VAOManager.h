@@ -31,6 +31,21 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
+    VAOManager(float* vertices, int size_of_vertex, void(*vertexAttribPointerCallback)()) {
+        num_of_tri = (int) (size_of_vertex / (3 * sizeof(float)));
+        // create
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glBindVertexArray(VAO);
+        // 绑定
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, size_of_vertex, vertices, GL_STATIC_DRAW);
+        // 解析顶点属性内存布局
+        vertexAttribPointerCallback();
+        // 解除绑定
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
     ~VAOManager() {
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);

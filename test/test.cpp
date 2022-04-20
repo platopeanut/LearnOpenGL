@@ -103,7 +103,7 @@ TEST(shader, two_object) {
         // draw
         shader1.use();
 //        float redValue = (float) sin(glfwGetTime()*10.0f)/2.0f + 0.5f;
-//        shader.setFloat4("aColor", redValue, 0, 0, 1);
+//        shader.setFloatV4("aColor", redValue, 0, 0, 1);
         glBindVertexArray(vaoManager2.VAO);
         vaoManager2.drawElements();
         shader2.use();
@@ -161,7 +161,7 @@ TEST(shader, uniform) {
         // draw
         shader.use();
         float redValue = (float) sin(glfwGetTime()*10.0f)/2.0f + 0.5f;
-        shader.setFloat4("aColor", redValue, 0, 0, 1);
+        shader.setFloatV4("aColor", redValue, 0, 0, 1);
 
         glBindVertexArray(vaoManager.VAO);
         vaoManager.drawElements();
@@ -191,6 +191,92 @@ TEST(check, glm) {
     trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
     vec = trans * vec;
     std::cout << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << std::endl;
+}
+
+TEST(shader, transform) {
+    GLFWwindow* window = createWindow(600, 400, "Learn OpenGL Main");
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    float vertices[] = {
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f
+    };
+    unsigned int indices[] = {
+            0, 1, 2,
+    };
+    VAOManager vaoManager(vertices, sizeof(vertices), indices, sizeof(indices), [](){
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)nullptr);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+    });
+    Shader shader(R"(D:\Projects\C++\learn_opengl\resources\shader\transform.vert)",
+                  R"(D:\Projects\C++\learn_opengl\resources\shader\transform.frag)");
+
+
+    auto config_texture = [](unsigned int& texture, const char * filename) {
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        // 设置纹理环绕，过滤方式
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // 加载，生成纹理
+        int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true);
+        unsigned char * data = stbi_load(filename, &width, &height, &nrChannels, 0);
+        if (data) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        } else std::cout << "Failed to load texture" << std::endl;
+        stbi_image_free(data);
+        std::cout << width << ", " << height << std::endl;
+    };
+    unsigned int texture;
+    config_texture(texture, R"(D:\Projects\C++\learn_opengl\resources\texture\hutao.jpeg)");
+    // 切记！！！设置uniform之前一定先use();
+    shader.use();
+    shader.setInt("texture1", 0);
+//    图元装配设置
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // render loop
+    while (!glfwWindowShouldClose(window)) {
+        // input
+        processInput(window);
+        // render
+        // clear
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        // bind texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        // transform
+        glm::mat4 trans;
+        trans = glm::rotate(trans, (float) glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
+        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "trans"),
+                           1,
+                           GL_FALSE,
+                           glm::value_ptr(trans));
+        // draw
+        shader.use();
+        glBindVertexArray(vaoManager.VAO);
+        vaoManager.drawElements();
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    glfwTerminate();
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
