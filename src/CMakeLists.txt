@@ -1,4 +1,4 @@
-project(MY_LIB)
+project(LEARN_OPENGL_SRC)
 
 file(GLOB SOURCE_DIR third_party/* ./*)
 add_library(${PROJECT_NAME} STATIC ${SOURCE_DIR})

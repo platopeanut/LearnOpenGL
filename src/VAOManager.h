@@ -1,7 +1,3 @@
-//
-// Created by 28571 on 2022/4/17.
-//
-
 #ifndef LEARN_OPENGL_VAOMANAGER_H
 #define LEARN_OPENGL_VAOMANAGER_H
 
