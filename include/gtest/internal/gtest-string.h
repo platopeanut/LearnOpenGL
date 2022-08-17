@@ -147,9 +147,9 @@ class GTEST_API_ String {
       const std::string& str, const std::string& suffix);
 
   // Formats an int value as "%02d".
-  static std::string FormatIntWidth2(int value);  // "%02d" for width == 2
+  static std::string FormatIntWidth2(int value);  // "%02d" for _width == 2
 
-  // Formats an int value to given width with leading zeros.
+  // Formats an int value to given _width with leading zeros.
   static std::string FormatIntWidthN(int value, int width);
 
   // Formats an int value as "%X".
