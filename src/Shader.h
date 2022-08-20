@@ -17,6 +17,7 @@ public:
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
     void setFloatV3(const std::string& name, float x, float y, float z) const;
+    void setFloatV3(const std::string& name, const glm::vec3& vec3) const;
     void setFloatV4(const std::string& name, float x, float y, float z, float w) const;
     void setFloatM4(const std::string& name, glm::mat4 transform) const;
 
